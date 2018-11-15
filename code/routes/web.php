@@ -14,6 +14,9 @@ use App\Jobs\ProcessReport;
 */
 
 Route::get('/', function () {
-    ProcessReport::dispatch();
     return view('welcome');
+});
+
+Route::get('/run-job', function () {
+    ProcessReport::dispatch();
 });

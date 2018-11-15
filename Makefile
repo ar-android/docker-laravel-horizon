@@ -8,7 +8,7 @@ down:
 	docker-compose down
 
 open:
-	open http://192.168.99.100
+	open http://localhost
 
 tinker:
 	docker-compose run php-fpm php artisan tinker
