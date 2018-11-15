@@ -1,0 +1,56 @@
+version: "2.0"
+
+services:
+  php-fpm:
+    build: ./build
+    container_name: php-fpm
+    depends_on:
+      - database
+      - redis
+    volumes:
+      - ./code:/application
+
+  database:
+    image: mariadb
+    container_name: database
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=laravel_horizon
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    depends_on:
+      - database
+    environment:
+      - MYSQL_ROOT_PASSWORD=alphaomega*9
+      - PMA_HOST=database
+    ports:
+      - "2525:80"
+
+  web:
+    image: nginx
+    container_name: web
+    ports:
+      - "80:8000"
+      - "443:443"
+    volumes:
+      - ./build/site.conf:/etc/nginx/conf.d/default.conf
+      - ./code:/application
+    depends_on:
+      - php-fpm
+      - phpmyadmin
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  queues:
+    build: ./build
+    container_name: queues
+    command: php artisan horizon
+    volumes:
+      - ./code:/application
